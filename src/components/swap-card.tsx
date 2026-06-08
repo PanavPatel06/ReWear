@@ -8,7 +8,7 @@ import { ArrowRightLeft, Check, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import { updateSwapStatus } from '@/lib/firebase/firestore';
 import { useState } from 'react';
-import { useToast } from './ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Badge } from './ui/badge';
 
 interface SwapCardProps {

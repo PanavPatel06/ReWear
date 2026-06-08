@@ -29,11 +29,14 @@ export const dummyItems: Item[] = [
     brand: 'Zara',
     // Replace this with your image URL
     images: ['https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=1887'],
+    uploaderId: 'dummy-1',
     uploaderName: 'Sarah Smith',
     points: 1200,
     originalPrice: 2500,
     valuationStatus: 'auto',
-    description: "A beautiful floral print summer dress, perfect for warm weather. Lightweight fabric with a flattering A-line silhouette. Worn only once."
+    description: "A beautiful floral print summer dress, perfect for warm weather. Lightweight fabric with a flattering A-line silhouette. Worn only once.",
+    createdAt: new Date(),
+    status: 'available'
   },
   // {
   //   id: '3',
@@ -55,11 +58,14 @@ export const dummyItems: Item[] = [
     brand: 'Uniqlo',
     // Replace this with your image URL
     images: ['https://images.unsplash.com/photo-1612423284934-2850a4ea6b0f?q=80&w=1887'],
+    uploaderId: 'dummy-2',
     uploaderName: 'Emily Chen',
     points: 500,
     originalPrice: 1000,
     valuationStatus: 'manual',
-    description: "A brand new, unworn striped t-shirt made from 100% soft cotton. A versatile wardrobe staple."
+    description: "A brand new, unworn striped t-shirt made from 100% soft cotton. A versatile wardrobe staple.",
+    createdAt: new Date(),
+    status: 'available'
   },
   // {
   //   id: '5',
@@ -81,10 +87,13 @@ export const dummyItems: Item[] = [
     brand: 'Hermès',
     // Replace this with your image URL
     images: ['https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=1935'],
+    uploaderId: 'dummy-3',
     uploaderName: 'Olivia Davis',
     points: 5000,
     originalPrice: 10000,
     valuationStatus: 'auto',
-    description: "A luxurious 100% silk scarf with a vibrant, intricate pattern. Can be worn in multiple ways. In pristine condition."
+    description: "A luxurious 100% silk scarf with a vibrant, intricate pattern. Can be worn in multiple ways. In pristine condition.",
+    createdAt: new Date(),
+    status: 'available'
   },
 ];

@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import Image from 'next/image';
 import { notFound, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
@@ -36,7 +37,9 @@ function getImageHint(category?: string) {
     }
 }
 
-export default function ItemDetailPage({ params }: { params: { id: string } }) {
+export default function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const id = resolvedParams.id;
   const [item, setItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
   const [isRedeeming, setIsRedeeming] = useState(false);
@@ -49,14 +52,14 @@ export default function ItemDetailPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     async function fetchItem() {
-      const fetchedItem = await getItemById(params.id);
+      const fetchedItem = await getItemById(id);
       if (fetchedItem) {
         setItem(fetchedItem);
       }
       setLoading(false);
     }
     fetchItem();
-  }, [params.id]);
+  }, [id]);
 
   const handleRedeem = async () => {
     if (!user || !item) return;

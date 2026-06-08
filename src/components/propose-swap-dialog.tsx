@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getUserAvailableItems } from '@/lib/firebase/firestore';
 import type { Item } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
-import { useToast } from './ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProposeSwapDialogProps {
   isOpen: boolean;

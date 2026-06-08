@@ -1,3 +1,12 @@
+if (typeof window === 'undefined') {
+  if (typeof globalThis !== 'undefined' && 'localStorage' in globalThis) {
+    try {
+      // @ts-ignore
+      delete globalThis.localStorage;
+    } catch (e) {}
+  }
+}
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {

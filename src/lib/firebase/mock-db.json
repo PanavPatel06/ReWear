@@ -1,5 +1,40 @@
 {
-  "users": {},
-  "items": [],
+  "users": {
+    "mock_user_1780908398184": {
+      "uid": "mock_user_1780908398184",
+      "email": "user@email.com",
+      "name": "Panav",
+      "points": 1000,
+      "address": "",
+      "password": "123456"
+    },
+    "mock_user_1780913200939": {
+      "uid": "mock_user_1780913200939",
+      "email": "panav@gmail.com",
+      "name": "Panav",
+      "points": 1000,
+      "address": "",
+      "password": "password123"
+    }
+  },
+  "items": [
+    {
+      "title": "Premium Leather Jacket",
+      "category": "Outerwear",
+      "condition": "Like new",
+      "brand": "Zara",
+      "description": "A high quality leather jacket in pristine condition.",
+      "points": 500,
+      "valuationStatus": "manual",
+      "images": [
+        "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=1887"
+      ],
+      "id": "mock_item_1780913578787",
+      "uploaderId": "mock_user_1780913200939",
+      "uploaderName": "Panav",
+      "createdAt": "2026-06-08T10:12:58.787Z",
+      "status": "available"
+    }
+  ],
   "swaps": []
 }

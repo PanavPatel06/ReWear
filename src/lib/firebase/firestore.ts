@@ -1,10 +1,27 @@
 import { collection, addDoc, serverTimestamp, getDocs, query, where, getDoc, doc, writeBatch, runTransaction, documentId } from "firebase/firestore"; 
-import { db } from "./firebase";
+import { db, isMockMode } from "./firebase";
 import type { Item, Swap, SwapProposal, UserProfile } from "@/lib/types";
 import { setDoc } from "firebase/firestore";
+import {
+  mockCreateUserProfile,
+  mockGetUserProfile,
+  mockUpdateUserProfile,
+  mockAddItem,
+  mockGetAvailableItems,
+  mockGetItemById,
+  mockGetUserItems,
+  mockGetUserAvailableItems,
+  mockRedeemItem,
+  mockProposeSwap,
+  mockGetUserSwaps,
+  mockUpdateSwapStatus
+} from "./mock-actions";
 
 // User Profile Functions
 export async function createUserProfile(uid: string, data: Omit<UserProfile, 'uid'>) {
+    if (isMockMode) {
+        return mockCreateUserProfile(uid, data);
+    }
     try {
         await setDoc(doc(db, "users", uid), data);
     } catch (e) {
@@ -14,6 +31,9 @@ export async function createUserProfile(uid: string, data: Omit<UserProfile, 'ui
 }
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+    if (isMockMode) {
+        return mockGetUserProfile(uid);
+    }
     const docRef = doc(db, 'users', uid);
     const docSnap = await getDoc(docRef);
 
@@ -25,6 +45,9 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 }
 
 export async function updateUserProfile(uid: string, data: Partial<UserProfile>) {
+    if (isMockMode) {
+        return mockUpdateUserProfile(uid, data);
+    }
     const userRef = doc(db, 'users', uid);
     await setDoc(userRef, data, { merge: true });
 }
@@ -32,6 +55,9 @@ export async function updateUserProfile(uid: string, data: Partial<UserProfile>)
 
 // Item Functions
 export async function addItem(itemData: Omit<Item, 'id' | 'createdAt' | 'uploaderId' | 'status' | 'uploaderName'>, userId: string, userName: string) {
+  if (isMockMode) {
+      return mockAddItem(itemData, userId, userName);
+  }
   try {
     const docRef = await addDoc(collection(db, "items"), {
       ...itemData,
@@ -49,6 +75,9 @@ export async function addItem(itemData: Omit<Item, 'id' | 'createdAt' | 'uploade
 }
 
 export async function getAvailableItems(): Promise<Item[]> {
+    if (isMockMode) {
+        return mockGetAvailableItems();
+    }
     const itemsCol = collection(db, 'items');
     const q = query(itemsCol, where('status', '==', 'available'));
     const itemSnapshot = await getDocs(q);
@@ -65,6 +94,9 @@ export async function getAvailableItems(): Promise<Item[]> {
 
 
 export async function getItemById(id: string): Promise<Item | null> {
+    if (isMockMode) {
+        return mockGetItemById(id);
+    }
     const docRef = doc(db, 'items', id);
     const docSnap = await getDoc(docRef);
 
@@ -82,6 +114,9 @@ export async function getItemById(id: string): Promise<Item | null> {
 }
 
 export async function getUserItems(userId: string): Promise<Item[]> {
+    if (isMockMode) {
+        return mockGetUserItems(userId);
+    }
     const itemsCol = collection(db, 'items');
     const q = query(itemsCol, where('uploaderId', '==', userId));
     const itemSnapshot = await getDocs(q);
@@ -97,6 +132,9 @@ export async function getUserItems(userId: string): Promise<Item[]> {
 }
 
 export async function getUserAvailableItems(userId: string): Promise<Item[]> {
+    if (isMockMode) {
+        return mockGetUserAvailableItems(userId);
+    }
     const itemsCol = collection(db, 'items');
     const q = query(itemsCol, where('uploaderId', '==', userId), where('status', '==', 'available'));
     const itemSnapshot = await getDocs(q);
@@ -107,6 +145,9 @@ export async function getUserAvailableItems(userId: string): Promise<Item[]> {
 // Swap and Redeem Functions
 
 export async function redeemItem(userId: string, itemId: string) {
+    if (isMockMode) {
+        return mockRedeemItem(userId, itemId);
+    }
     await runTransaction(db, async (transaction) => {
         const userRef = doc(db, "users", userId);
         const itemRef = doc(db, "items", itemId);
@@ -132,6 +173,9 @@ export async function redeemItem(userId: string, itemId: string) {
 }
 
 export async function proposeSwap(proposal: SwapProposal) {
+    if (isMockMode) {
+        return mockProposeSwap(proposal);
+    }
     try {
         await addDoc(collection(db, "swaps"), {
             ...proposal,
@@ -145,6 +189,9 @@ export async function proposeSwap(proposal: SwapProposal) {
 }
 
 export async function getUserSwaps(userId: string): Promise<Swap[]> {
+    if (isMockMode) {
+        return mockGetUserSwaps(userId);
+    }
     const swapsRef = collection(db, "swaps");
     const q = query(swapsRef, where('status', '==', 'pending'), where(documentId(), 'in', [
         where('proposerId', '==', userId),
@@ -195,6 +242,9 @@ export async function getUserSwaps(userId: string): Promise<Swap[]> {
 }
 
 export async function updateSwapStatus(swapId: string, status: 'accepted' | 'rejected') {
+    if (isMockMode) {
+        return mockUpdateSwapStatus(swapId, status);
+    }
     const swapRef = doc(db, 'swaps', swapId);
     
     if (status === 'rejected') {

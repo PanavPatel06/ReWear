@@ -2,9 +2,10 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, type User } from 'firebase/auth';
-import { auth } from '@/lib/firebase/firebase';
+import { auth, isMockMode } from '@/lib/firebase/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createUserProfile } from '@/lib/firebase/firestore';
+import { mockGetUserByEmail, mockSaveUser } from '@/lib/firebase/mock-actions';
 
 interface AuthContextType {
   user: User | null;
@@ -27,6 +28,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (isMockMode) {
+      const stored = localStorage.getItem('mock_user');
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
@@ -35,6 +44,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signup = async (email: string, password: string, fullName: string) => {
+    if (isMockMode) {
+      const existing = await mockGetUserByEmail(email);
+      if (existing) {
+        throw new Error("This email is already in use.");
+      }
+      const uid = `mock_user_${Date.now()}`;
+      const mockUserObj = {
+        uid,
+        email,
+        displayName: fullName,
+        emailVerified: true,
+        isAnonymous: false,
+        metadata: {},
+        providerData: [],
+        refreshToken: '',
+        tenantId: null,
+        delete: async () => {},
+        getIdToken: async () => '',
+        getIdTokenResult: async () => ({} as any),
+        reload: async () => {},
+        toJSON: () => ({})
+      } as any;
+
+      await mockSaveUser(uid, {
+        uid,
+        email,
+        name: fullName,
+        points: 1000,
+        address: '',
+        password
+      });
+
+      localStorage.setItem('mock_user', JSON.stringify(mockUserObj));
+      setUser(mockUserObj);
+      return { user: mockUserObj };
+    }
+
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     if (userCredential.user) {
       await updateProfile(userCredential.user, {
@@ -52,11 +98,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return userCredential;
   };
 
-  const login = (email: string, password: string) => {
+  const login = async (email: string, password: string) => {
+    if (isMockMode) {
+      const existing = await mockGetUserByEmail(email);
+      if (!existing || existing.password !== password) {
+        throw new Error("Invalid email or password.");
+      }
+      const mockUserObj = {
+        uid: existing.uid,
+        email: existing.email,
+        displayName: existing.name,
+        emailVerified: true,
+        isAnonymous: false,
+        metadata: {},
+        providerData: [],
+        refreshToken: '',
+        tenantId: null,
+        delete: async () => {},
+        getIdToken: async () => '',
+        getIdTokenResult: async () => ({} as any),
+        reload: async () => {},
+        toJSON: () => ({})
+      } as any;
+
+      localStorage.setItem('mock_user', JSON.stringify(mockUserObj));
+      setUser(mockUserObj);
+      return { user: mockUserObj };
+    }
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    if (isMockMode) {
+      localStorage.removeItem('mock_user');
+      setUser(null);
+      return;
+    }
     return signOut(auth);
   };
 
